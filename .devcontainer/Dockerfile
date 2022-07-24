@@ -20,5 +20,4 @@ FROM mcr.microsoft.com/vscode/devcontainers/go:0-${VARIANT}
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
 
 # Go develop tools
-RUN go get github.com/golangci/golangci-lint/cmd/golangci-lint
 RUN go get golang.org/x/tools/gopls
