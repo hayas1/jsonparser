@@ -11,12 +11,12 @@ const (
 )
 
 type Token struct {
-	element    string
-	token_type TokenType
+	Element    string
+	Token_type TokenType
 }
 
 func (t *Token) String() string {
-	return fmt.Sprintf("[\"%s\": %s]", t.element, t.token_type)
+	return fmt.Sprintf("[\"%s\": %s]", t.Element, t.Token_type)
 }
 
 func Tokenize(s string) Token {
