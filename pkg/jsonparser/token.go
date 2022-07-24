@@ -1,6 +1,9 @@
 package jsonparser
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type TokenType string
 
@@ -17,7 +20,7 @@ const (
 	NULL         TokenType = "NULL(null)"
 
 	QUOTATION TokenType = "QUOTATION(\")"
-	STRING    TokenType = "STRING(\"...\")"
+	STRING    TokenType = "STRING"
 	// REVERSESOLIDUS TokenType = "REVERSESOLIDUS(\\)"
 	// SOLIDUS        TokenType = "SOLIDUS(/)"
 	// BACKSPACE      TokenType = "BACKSPACE(b)"
@@ -26,6 +29,12 @@ const (
 	// CARRIAGERETURN TokenType = "CARRIAGERETURN(r)"
 	// HORIZONTALTAB  TokenType = "HORIZONTALTAB(t)"
 	// UNICODE        TokenType = "UNICODE(u)"
+
+	NUMBER TokenType = "NUMBER"
+	// MINUS    TokenType = "MINUS(-)"
+	// PLUS     TokenType = "PLUS(+)"
+	// DOT      TokenType = "DOT(.)"
+	// EXPONENT TokenType = "EXPONENT(E)"
 
 	UNKNOWN TokenType = "UNKNOWN"
 )
@@ -37,6 +46,15 @@ type Token struct {
 
 func (t Token) String() string {
 	return fmt.Sprintf("<\"%s\": %s>", t.Element, t.TokenType)
+}
+
+func (t Token) Float() (float64, error) {
+	return strconv.ParseFloat(t.Element, 64)
+}
+
+func (t Token) Integer() (int64, error) {
+	num, err := t.Float()
+	return int64(num), err
 }
 
 func Tokenize(s string) Token {
@@ -70,4 +88,8 @@ func Tokenize(s string) Token {
 
 func TokenizeString(s string) Token {
 	return Token{s, STRING}
+}
+
+func TokenizeNumber(s string) Token {
+	return Token{s, NUMBER}
 }

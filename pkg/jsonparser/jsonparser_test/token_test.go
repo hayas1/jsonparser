@@ -83,3 +83,30 @@ func TestTokenizeString(tester *testing.T) {
 		}
 	}
 }
+
+func TestTokenizeNumber(tester *testing.T) {
+	num100 := jp.TokenizeNumber("100")
+	if num100.TokenType != jp.NUMBER {
+		tester.Error("TokenizeNumber function must return NUMBER type token")
+	}
+	if hundred, err := num100.Integer(); !(hundred == 100 && err == nil) {
+		tester.Error("100 must be evaluated as integer 100")
+	}
+
+	num1p5 := jp.TokenizeNumber("1.5")
+	if num1p5.TokenType != jp.NUMBER {
+		tester.Error("TokenizeNumber function must return NUMBER type token")
+	}
+	if oneFive, err := num1p5.Float(); !(oneFive == 1.5 && err == nil) {
+		tester.Error("1.5 must be evaluated as float 1.5")
+	}
+
+	num1e5 := jp.TokenizeNumber("1E5")
+	if num1e5.TokenType != jp.NUMBER {
+		tester.Error("TokenizeNumber function must return NUMBER type token")
+	}
+	if hundredThousand, err := num1e5.Integer(); !(hundredThousand == 100000 && err == nil) {
+		tester.Error("1E5 must be evaluated as integer 100000")
+	}
+
+}
