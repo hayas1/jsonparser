@@ -62,3 +62,24 @@ func TestTokenizeImmediate(tester *testing.T) {
 	expected := []jp.TokenType{jp.TRUE, jp.FALSE, jp.NULL}
 	testTokenize(tester, immediate, expected, "\"true\", \"false\", \"\" should be immediate token")
 }
+
+func TestTokenizeQuotation(tester *testing.T) {
+	quotation := "\""
+	quotations := []string{quotation}
+	expected := []jp.TokenType{jp.QUOTATION}
+	testTokenize(tester, quotations, expected, "\"\"\" should be quotation token")
+}
+
+func TestTokenizeString(tester *testing.T) {
+	str1, str2 := "string", "\"string\""
+	strings := []string{str1, str2}
+	expected := []jp.TokenType{jp.STRING, jp.STRING}
+	for i := 0; i < len(strings); i++ {
+		if jp.TokenizeString(strings[i]).TokenType != expected[i] {
+			tester.Error("TokenizeString function must return STRING type token")
+		}
+		if jp.TokenizeString(strings[i]).Element != strings[i] {
+			tester.Error("STRING type token's Element is origin string")
+		}
+	}
+}

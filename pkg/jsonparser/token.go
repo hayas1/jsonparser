@@ -16,6 +16,17 @@ const (
 	FALSE        TokenType = "FALSE(false)"
 	NULL         TokenType = "NULL(null)"
 
+	QUOTATION TokenType = "QUOTATION(\")"
+	STRING    TokenType = "STRING(\"...\")"
+	// REVERSESOLIDUS TokenType = "REVERSESOLIDUS(\\)"
+	// SOLIDUS        TokenType = "SOLIDUS(/)"
+	// BACKSPACE      TokenType = "BACKSPACE(b)"
+	// FORMFEED       TokenType = "FORMFEED(f)"
+	// LINEFEED       TokenType = "LINEFEED(n)"
+	// CARRIAGERETURN TokenType = "CARRIAGERETURN(r)"
+	// HORIZONTALTAB  TokenType = "HORIZONTALTAB(t)"
+	// UNICODE        TokenType = "UNICODE(u)"
+
 	UNKNOWN TokenType = "UNKNOWN"
 )
 
@@ -50,8 +61,13 @@ func Tokenize(s string) Token {
 		return Token{s, FALSE}
 	case "null":
 		return Token{s, NULL}
+	case "\"":
+		return Token{s, QUOTATION}
 	default:
-		// TODO string or unknown
 		return Token{s, UNKNOWN}
 	}
+}
+
+func TokenizeString(s string) Token {
+	return Token{s, STRING}
 }
