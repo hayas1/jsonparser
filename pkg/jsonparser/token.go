@@ -5,10 +5,13 @@ import "fmt"
 type TokenType string
 
 const (
-	LEFTBRACE  TokenType = "LEFTBRACE({)"
-	RIGHTBRACE TokenType = "RIGHTBRACE(})"
-	WHITESPACE TokenType = "WHITESPACE( )"
-	COLON      TokenType = "COLON(:)"
+	LEFTBRACE    TokenType = "LEFTBRACE({)"
+	RIGHTBRACE   TokenType = "RIGHTBRACE(})"
+	WHITESPACE   TokenType = "WHITESPACE( )"
+	COLON        TokenType = "COLON(:)"
+	COMMA        TokenType = "COMMA(,)"
+	LEFTBRACKET  TokenType = "LEFTBRACKET(])"
+	RIGHTBRACKET TokenType = "RIGHTBRACKET(])"
 
 	UNKNOWN TokenType = "UNKNOWN"
 )
@@ -32,6 +35,12 @@ func Tokenize(s string) Token {
 		return Token{s, WHITESPACE}
 	case ":":
 		return Token{s, COLON}
+	case ",":
+		return Token{s, COMMA}
+	case "[":
+		return Token{s, LEFTBRACKET}
+	case "]":
+		return Token{s, RIGHTBRACKET}
 	default:
 		return Token{s, UNKNOWN}
 	}

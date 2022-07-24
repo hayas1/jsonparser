@@ -23,9 +23,9 @@ func testTokenize(tester *testing.T, tokenStrings []string, expectedTokenTypes [
 
 func TestTokenizeBrace(tester *testing.T) {
 	leftbrace, rightbrace := "{", "}"
-	brace := []string{leftbrace, rightbrace}
+	braces := []string{leftbrace, rightbrace}
 	expected := []jp.TokenType{jp.LEFTBRACE, jp.RIGHTBRACE}
-	testTokenize(tester, brace, expected, "\"{\" and \"}\" should be brace token")
+	testTokenize(tester, braces, expected, "\"{\" and \"}\" should be brace token")
 }
 
 func TestTokenizeWhitespace(tester *testing.T) {
@@ -40,4 +40,18 @@ func TestTokenizeColon(tester *testing.T) {
 	colons := []string{colon}
 	expected := []jp.TokenType{jp.COLON}
 	testTokenize(tester, colons, expected, "\":\" should be colon token")
+}
+
+func TestTokenizeComma(tester *testing.T) {
+	comma := ","
+	commas := []string{comma}
+	expected := []jp.TokenType{jp.COMMA}
+	testTokenize(tester, commas, expected, "\",\" should be comma token")
+}
+
+func TestTokenizeBracket(tester *testing.T) {
+	leftbracket, rightbracket := "[", "]"
+	brackets := []string{leftbracket, rightbracket}
+	expected := []jp.TokenType{jp.LEFTBRACKET, jp.RIGHTBRACKET}
+	testTokenize(tester, brackets, expected, "\"[\" and \"]\" should be bracket token")
 }
