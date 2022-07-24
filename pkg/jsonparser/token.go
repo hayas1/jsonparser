@@ -12,6 +12,9 @@ const (
 	COMMA        TokenType = "COMMA(,)"
 	LEFTBRACKET  TokenType = "LEFTBRACKET(])"
 	RIGHTBRACKET TokenType = "RIGHTBRACKET(])"
+	TRUE         TokenType = "TRUE(true)"
+	FALSE        TokenType = "FALSE(false)"
+	NULL         TokenType = "NULL(null)"
 
 	UNKNOWN TokenType = "UNKNOWN"
 )
@@ -41,7 +44,14 @@ func Tokenize(s string) Token {
 		return Token{s, LEFTBRACKET}
 	case "]":
 		return Token{s, RIGHTBRACKET}
+	case "true":
+		return Token{s, TRUE}
+	case "false":
+		return Token{s, FALSE}
+	case "null":
+		return Token{s, NULL}
 	default:
+		// TODO string or unknown
 		return Token{s, UNKNOWN}
 	}
 }

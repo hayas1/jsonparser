@@ -25,7 +25,7 @@ func TestTokenizeBrace(tester *testing.T) {
 	leftbrace, rightbrace := "{", "}"
 	braces := []string{leftbrace, rightbrace}
 	expected := []jp.TokenType{jp.LEFTBRACE, jp.RIGHTBRACE}
-	testTokenize(tester, braces, expected, "\"{\" and \"}\" should be brace token")
+	testTokenize(tester, braces, expected, "\"{\", \"}\" should be brace token")
 }
 
 func TestTokenizeWhitespace(tester *testing.T) {
@@ -53,5 +53,12 @@ func TestTokenizeBracket(tester *testing.T) {
 	leftbracket, rightbracket := "[", "]"
 	brackets := []string{leftbracket, rightbracket}
 	expected := []jp.TokenType{jp.LEFTBRACKET, jp.RIGHTBRACKET}
-	testTokenize(tester, brackets, expected, "\"[\" and \"]\" should be bracket token")
+	testTokenize(tester, brackets, expected, "\"[\", \"]\" should be bracket token")
+}
+
+func TestTokenizeImmediate(tester *testing.T) {
+	tru, fal, null := "true", "false", "null"
+	immediate := []string{tru, fal, null}
+	expected := []jp.TokenType{jp.TRUE, jp.FALSE, jp.NULL}
+	testTokenize(tester, immediate, expected, "\"true\", \"false\", \"\" should be immediate token")
 }
