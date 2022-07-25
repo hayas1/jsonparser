@@ -2,7 +2,6 @@ package jsonparser
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type TokenType string
@@ -19,22 +18,22 @@ const (
 	FALSE        TokenType = "FALSE(false)"
 	NULL         TokenType = "NULL(null)"
 
-	QUOTATION TokenType = "QUOTATION(\")"
-	STRING    TokenType = "STRING"
-	// REVERSESOLIDUS TokenType = "REVERSESOLIDUS(\\)"
-	// SOLIDUS        TokenType = "SOLIDUS(/)"
-	// BACKSPACE      TokenType = "BACKSPACE(b)"
-	// FORMFEED       TokenType = "FORMFEED(f)"
-	// LINEFEED       TokenType = "LINEFEED(n)"
-	// CARRIAGERETURN TokenType = "CARRIAGERETURN(r)"
-	// HORIZONTALTAB  TokenType = "HORIZONTALTAB(t)"
-	// UNICODE        TokenType = "UNICODE(u)"
+	QUOTATION      TokenType = "QUOTATION(\")"
+	REVERSESOLIDUS TokenType = "REVERSESOLIDUS(\\)"
+	SOLIDUS        TokenType = "SOLIDUS(/)"
+	BACKSPACE      TokenType = "BACKSPACE(b)"
+	FORMFEED       TokenType = "FORMFEED(f)"
+	LINEFEED       TokenType = "LINEFEED(n)"
+	CARRIAGERETURN TokenType = "CARRIAGERETURN(r)"
+	HORIZONTALTAB  TokenType = "HORIZONTALTAB(t)"
+	UNICODE        TokenType = "UNICODE(u)"
+	SUBSTRING      TokenType = "SUBSTRING(\"...\")"
 
-	NUMBER TokenType = "NUMBER"
-	// MINUS    TokenType = "MINUS(-)"
-	// PLUS     TokenType = "PLUS(+)"
-	// DOT      TokenType = "DOT(.)"
-	// EXPONENT TokenType = "EXPONENT(E)"
+	DIGIT    TokenType = "DIGIT(0-9)"
+	MINUS    TokenType = "MINUS(-)"
+	PLUS     TokenType = "PLUS(+)"
+	DOT      TokenType = "DOT(.)"
+	EXPONENT TokenType = "EXPONENT(E)"
 
 	UNKNOWN TokenType = "UNKNOWN"
 )
@@ -48,13 +47,13 @@ func (t Token) String() string {
 	return fmt.Sprintf("<\"%s\": %s>", t.Element, t.TokenType)
 }
 
-func (t Token) Float() (float64, error) {
-	return strconv.ParseFloat(t.Element, 64)
-}
-
-func (t Token) Integer() (int64, error) {
-	num, err := t.Float()
-	return int64(num), err
+func IsWhitespace(c rune) bool {
+	switch c {
+	case ' ', '\n', '\r', '\t':
+		return true
+	default:
+		return false
+	}
 }
 
 func Tokenize(s string) Token {
@@ -87,9 +86,43 @@ func Tokenize(s string) Token {
 }
 
 func TokenizeString(s string) Token {
-	return Token{s, STRING}
+	switch s {
+	case "\"":
+		return Token{s, QUOTATION}
+	case "\\":
+		return Token{s, REVERSESOLIDUS}
+	case "/":
+		return Token{s, SOLIDUS}
+	case "b":
+		return Token{s, BACKSPACE}
+	case "f":
+		return Token{s, FORMFEED}
+	case "n":
+		return Token{s, LINEFEED}
+	case "r":
+		return Token{s, CARRIAGERETURN}
+	case "t":
+		return Token{s, HORIZONTALTAB}
+	case "u":
+		return Token{s, UNICODE}
+	default:
+		return Token{s, SUBSTRING}
+	}
 }
 
 func TokenizeNumber(s string) Token {
-	return Token{s, NUMBER}
+	switch s {
+	case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
+		return Token{s, DIGIT}
+	case "-":
+		return Token{s, MINUS}
+	case "+":
+		return Token{s, PLUS}
+	case ".":
+		return Token{s, DOT}
+	case "e", "E":
+		return Token{s, EXPONENT}
+	default:
+		return Token{s, UNKNOWN}
+	}
 }

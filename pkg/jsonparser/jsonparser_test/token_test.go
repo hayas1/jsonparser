@@ -71,42 +71,32 @@ func TestTokenizeQuotation(tester *testing.T) {
 }
 
 func TestTokenizeString(tester *testing.T) {
-	str1, str2 := "string", "\"string\""
-	strings := []string{str1, str2}
-	expected := []jp.TokenType{jp.STRING, jp.STRING}
-	for i := 0; i < len(strings); i++ {
-		if jp.TokenizeString(strings[i]).TokenType != expected[i] {
-			tester.Error("TokenizeString function must return STRING type token")
+	quo, rsl, sl, bs, ff, lf, cr, ht, uni := "\"", "\\", "/", "b", "f", "n", "r", "t", "u"
+	stringParts := []string{quo, rsl, sl, bs, ff, lf, cr, ht, uni}
+	expected := []jp.TokenType{jp.QUOTATION, jp.REVERSESOLIDUS, jp.SOLIDUS, jp.BACKSPACE, jp.FORMFEED, jp.LINEFEED,
+		jp.CARRIAGERETURN, jp.HORIZONTALTAB, jp.UNICODE}
+	for i := 0; i < len(stringParts); i++ {
+		if jp.TokenizeString(stringParts[i]).TokenType != expected[i] {
+			tester.Error(stringParts[i] + " should be " + string(expected[i]) + " token")
 		}
-		if jp.TokenizeString(strings[i]).Element != strings[i] {
-			tester.Error("STRING type token's Element is origin string")
-		}
+	}
+
+	if jp.TokenizeString("aaa").TokenType != jp.SUBSTRING {
+		tester.Error("\"aaa\" should be substring type token")
 	}
 }
 
 func TestTokenizeNumber(tester *testing.T) {
-	num100 := jp.TokenizeNumber("100")
-	if num100.TokenType != jp.NUMBER {
-		tester.Error("TokenizeNumber function must return NUMBER type token")
-	}
-	if hundred, err := num100.Integer(); !(hundred == 100 && err == nil) {
-		tester.Error("100 must be evaluated as integer 100")
-	}
-
-	num1p5 := jp.TokenizeNumber("1.5")
-	if num1p5.TokenType != jp.NUMBER {
-		tester.Error("TokenizeNumber function must return NUMBER type token")
-	}
-	if oneFive, err := num1p5.Float(); !(oneFive == 1.5 && err == nil) {
-		tester.Error("1.5 must be evaluated as float 1.5")
+	digit, minus, plus, dot, exponent := "7", "-", "+", ".", "e"
+	numberParts := []string{digit, minus, plus, dot, exponent}
+	expected := []jp.TokenType{jp.DIGIT, jp.MINUS, jp.PLUS, jp.DOT, jp.EXPONENT}
+	for i := 0; i < len(numberParts); i++ {
+		if jp.TokenizeNumber(numberParts[i]).TokenType != expected[i] {
+			tester.Error(numberParts[i] + " should be " + string(expected[i]) + " token")
+		}
 	}
 
-	num1e5 := jp.TokenizeNumber("1E5")
-	if num1e5.TokenType != jp.NUMBER {
-		tester.Error("TokenizeNumber function must return NUMBER type token")
+	if jp.TokenizeNumber("123").TokenType != jp.UNKNOWN {
+		tester.Error("\"123\" should be unknown token")
 	}
-	if hundredThousand, err := num1e5.Integer(); !(hundredThousand == 100000 && err == nil) {
-		tester.Error("1E5 must be evaluated as integer 100000")
-	}
-
 }
