@@ -34,8 +34,10 @@ const (
 	PLUS     TokenType = "PLUS(+)"
 	DOT      TokenType = "DOT(.)"
 	EXPONENT TokenType = "EXPONENT(E)"
+	DIGITS   TokenType = "DIGITS([0-9]+)"
 
 	UNKNOWN TokenType = "UNKNOWN"
+	EOF     TokenType = "EOF"
 )
 
 type Token struct {
@@ -56,30 +58,37 @@ func IsWhitespace(c rune) bool {
 	}
 }
 
-func Tokenize(s string) Token {
+func Tokenize(c rune) Token {
+	switch c {
+	case '{':
+		return Token{string(c), LEFTBRACE}
+	case '}':
+		return Token{string(c), RIGHTBRACE}
+	case ' ', '\n', '\r', '\t':
+		return Token{string(c), WHITESPACE}
+	case ':':
+		return Token{string(c), COLON}
+	case ',':
+		return Token{string(c), COMMA}
+	case '[':
+		return Token{string(c), LEFTBRACKET}
+	case ']':
+		return Token{string(c), RIGHTBRACKET}
+	case '"':
+		return Token{string(c), QUOTATION}
+	default:
+		return Token{string(c), UNKNOWN}
+	}
+}
+
+func TokenizeImmediate(s string) Token {
 	switch s {
-	case "{":
-		return Token{s, LEFTBRACE}
-	case "}":
-		return Token{s, RIGHTBRACE}
-	case " ", "\n", "\r\n", "\t":
-		return Token{s, WHITESPACE}
-	case ":":
-		return Token{s, COLON}
-	case ",":
-		return Token{s, COMMA}
-	case "[":
-		return Token{s, LEFTBRACKET}
-	case "]":
-		return Token{s, RIGHTBRACKET}
 	case "true":
 		return Token{s, TRUE}
 	case "false":
 		return Token{s, FALSE}
 	case "null":
 		return Token{s, NULL}
-	case "\"":
-		return Token{s, QUOTATION}
 	default:
 		return Token{s, UNKNOWN}
 	}
@@ -123,6 +132,6 @@ func TokenizeNumber(s string) Token {
 	case "e", "E":
 		return Token{s, EXPONENT}
 	default:
-		return Token{s, UNKNOWN}
+		return Token{s, DIGITS}
 	}
 }
