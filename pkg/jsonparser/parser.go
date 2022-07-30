@@ -60,6 +60,37 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 	return ast.ObjectNode{ValueObject: valueObject}, nil
 }
 
+func (p *Parser) ParseArray() (ast.ArrayNode, error) {
+	if _, err := p.lexer.Lex1RuneToken(LEFTBRACKET); err != nil {
+		return ast.ArrayNode{}, err
+	}
+
+	valueArray := make([]ast.ValueNode, 0)
+	for p.lexer.IsArrayEnd() {
+		valueNode, err1 := p.ParseValue()
+		if err1 != nil {
+			return ast.ArrayNode{}, err1
+		}
+
+		// should be refactored?
+		if !p.lexer.IsArrayEnd() {
+			_, err4 := p.lexer.Lex1RuneToken(COMMA)
+			if err, ok := err4.(*UnexpectedTokenError); !p.lexer.IsArrayEnd() && ok {
+				err.AddExpected(RIGHTBRACKET)
+				return ast.ArrayNode{}, err
+			}
+		}
+
+		valueArray = append(valueArray, valueNode)
+	}
+
+	if _, err := p.lexer.Lex1RuneToken(RIGHTBRACE); err != nil {
+		return ast.ArrayNode{}, err
+	}
+
+	return ast.ArrayNode{ValueArray: valueArray}, nil
+}
+
 func (p *Parser) ParseString() (ast.StringNode, error) {
 	// TODO
 	return ast.StringNode{}, nil

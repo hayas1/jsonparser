@@ -63,6 +63,9 @@ func (l *Lexer) PeekNextNotWsToken() Token {
 func (l *Lexer) IsObjectEnd() bool {
 	return l.PeekNextNotWsToken().TokenType == LEFTBRACE
 }
+func (l *Lexer) IsArrayEnd() bool {
+	return l.PeekNextNotWsToken().TokenType == RIGHTBRACE
+}
 
 func (l *Lexer) Lex1RuneToken(expectedToken TokenType) (Token, error) {
 	if eof := l.skipWhitespace(); eof != nil {

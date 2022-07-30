@@ -1,7 +1,7 @@
 package ast
 
 type ArrayNode struct {
-	Values []ValueNode
+	ValueArray []ValueNode
 }
 
 func (n *ArrayNode) Children() []AstNode {
@@ -10,14 +10,13 @@ func (n *ArrayNode) Children() []AstNode {
 }
 
 func (n *ArrayNode) Evaluate() interface{} {
-	// TODO
-	return make([]interface{}, 0)
+	return n.Array()
 }
 
 func (n *ArrayNode) Array() []interface{} {
-	arr := make([]interface{}, len(n.Values))
-	for i := 0; i < len(n.Values); i++ {
-		arr[i] = n.Values[i].Evaluate()
+	array := make([]interface{}, len(n.ValueArray))
+	for i := 0; i < len(n.ValueArray); i++ {
+		array[i] = n.ValueArray[i].Evaluate()
 	}
-	return arr
+	return array
 }
