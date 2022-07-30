@@ -1,7 +1,7 @@
 package ast
 
 type ObjectNode struct {
-	objectMap map[StringNode]ValueNode
+	ValueObject map[StringNode]ValueNode
 }
 
 func (n *ObjectNode) Children() []*AstNode {
@@ -14,9 +14,9 @@ func (n *ObjectNode) Evaluate() interface{} {
 }
 
 func (n *ObjectNode) Object() map[string]interface{} {
-	objectMap := make(map[string]interface{})
-	for s, v := range n.objectMap {
-		objectMap[s.Evaluate().(string)] = v.Evaluate()
+	object := make(map[string]interface{})
+	for s, v := range n.ValueObject {
+		object[s.Evaluate().(string)] = v.Evaluate()
 	}
-	return objectMap
+	return object
 }

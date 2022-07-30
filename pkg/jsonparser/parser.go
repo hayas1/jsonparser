@@ -21,7 +21,7 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 		return ast.ObjectNode{}, err
 	}
 
-	objectMap := make(map[ast.StringNode]ast.ValueNode, 0)
+	valueObject := make(map[ast.StringNode]ast.ValueNode, 0)
 	for !p.lexer.IsObjectEnd() {
 		stringNode, err1 := p.ParseString()
 		if err, ok := err1.(*UnexpectedTokenError); err1 != nil && ok {
@@ -36,13 +36,13 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 			return ast.ObjectNode{}, err2
 		}
 
-		objectNode, err3 := p.ParseValue()
+		valueNode, err3 := p.ParseValue()
 		if err3 != nil {
 			return ast.ObjectNode{}, err3
 		}
 
+		// should be refactored?
 		if !p.lexer.IsObjectEnd() {
-			// should be refactored?
 			_, err4 := p.lexer.Lex1RuneToken(COMMA)
 			if err, ok := err4.(*UnexpectedTokenError); !p.lexer.IsObjectEnd() && ok {
 				err.AddExpected(RIGHTBRACE)
@@ -50,14 +50,14 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 			}
 		}
 
-		objectMap[stringNode] = objectNode
-
+		valueObject[stringNode] = valueNode
 	}
+
 	if _, err := p.lexer.Lex1RuneToken(RIGHTBRACE); err != nil {
 		return ast.ObjectNode{}, err
 	}
 
-	return ast.ObjectNode{}, nil
+	return ast.ObjectNode{ValueObject: valueObject}, nil
 }
 
 func (p *Parser) ParseString() (ast.StringNode, error) {
