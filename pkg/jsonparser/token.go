@@ -12,7 +12,7 @@ const (
 	WHITESPACE   TokenType = "WHITESPACE( )"
 	COLON        TokenType = "COLON(:)"
 	COMMA        TokenType = "COMMA(,)"
-	LEFTBRACKET  TokenType = "LEFTBRACKET(])"
+	LEFTBRACKET  TokenType = "LEFTBRACKET([)"
 	RIGHTBRACKET TokenType = "RIGHTBRACKET(])"
 	TRUE         TokenType = "TRUE(true)"
 	FALSE        TokenType = "FALSE(false)"
