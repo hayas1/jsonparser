@@ -91,12 +91,22 @@ func (p *Parser) ParseArray() (ast.ArrayNode, error) {
 	return ast.ArrayNode{ValueArray: valueArray}, nil
 }
 
+func (p *Parser) ParseValue() (ast.ValueNode, error) {
+	// TODO
+	return ast.ValueNode{}, nil
+}
+
+func (p *Parser) ParseImmediate() (ast.ImmediateNode, error) {
+	// TODO
+	return ast.ImmediateNode{}, nil
+}
+
 func (p *Parser) ParseString() (ast.StringNode, error) {
 	// TODO
 	return ast.StringNode{}, nil
 }
 
-func (p *Parser) ParseValue() (ast.ValueNode, error) {
+func (p *Parser) ParseNumber() (ast.NumberNode, error) {
 	// TODO
-	return ast.ValueNode{}, nil
+	return ast.NumberNode{}, nil
 }
