@@ -22,7 +22,7 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 	}
 
 	valueObject := make(map[ast.StringNode]ast.ValueNode, 0)
-	for !p.lexer.IsObjectEnd() {
+	for !p.lexer.IsSkipWsToken(RIGHTBRACE) {
 		stringNode, err1 := p.ParseString()
 		if err, ok := err1.(*UnexpectedTokenError); err1 != nil && ok {
 			err.AddExpected(RIGHTBRACE)
@@ -42,9 +42,9 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 		}
 
 		// should be refactored?
-		if !p.lexer.IsObjectEnd() {
+		if !p.lexer.IsSkipWsToken(RIGHTBRACE) {
 			_, err4 := p.lexer.Lex1RuneToken(COMMA)
-			if err, ok := err4.(*UnexpectedTokenError); !p.lexer.IsObjectEnd() && ok {
+			if err, ok := err4.(*UnexpectedTokenError); ok && !p.lexer.IsSkipWsToken(RIGHTBRACE) {
 				err.AddExpected(RIGHTBRACE)
 				return ast.ObjectNode{}, err
 			}
@@ -66,16 +66,16 @@ func (p *Parser) ParseArray() (ast.ArrayNode, error) {
 	}
 
 	valueArray := make([]ast.ValueNode, 0)
-	for p.lexer.IsArrayEnd() {
+	for !p.lexer.IsSkipWsToken(RIGHTBRACKET) {
 		valueNode, err1 := p.ParseValue()
 		if err1 != nil {
 			return ast.ArrayNode{}, err1
 		}
 
 		// should be refactored?
-		if !p.lexer.IsArrayEnd() {
-			_, err4 := p.lexer.Lex1RuneToken(COMMA)
-			if err, ok := err4.(*UnexpectedTokenError); !p.lexer.IsArrayEnd() && ok {
+		if !p.lexer.IsSkipWsToken(RIGHTBRACKET) {
+			_, err2 := p.lexer.Lex1RuneToken(COMMA)
+			if err, ok := err2.(*UnexpectedTokenError); ok && !p.lexer.IsSkipWsToken(RIGHTBRACKET) {
 				err.AddExpected(RIGHTBRACKET)
 				return ast.ArrayNode{}, err
 			}
@@ -84,7 +84,7 @@ func (p *Parser) ParseArray() (ast.ArrayNode, error) {
 		valueArray = append(valueArray, valueNode)
 	}
 
-	if _, err := p.lexer.Lex1RuneToken(RIGHTBRACE); err != nil {
+	if _, err := p.lexer.Lex1RuneToken(RIGHTBRACKET); err != nil {
 		return ast.ArrayNode{}, err
 	}
 

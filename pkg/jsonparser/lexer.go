@@ -8,15 +8,18 @@ type Lexer struct {
 	col int
 }
 
-func (l *Lexer) CurrentCursor() (int, int) {
-	return l.row, l.col
-}
-func (l *Lexer) Current() rune {
-	return l.js[l.row][l.col]
+func (l *Lexer) CurrentCursor() (int, int, error) {
+	if l.row < len(l.js) {
+		return l.row, l.col, nil
+	} else {
+		return len(l.js), 0, io.EOF
+	}
 }
 
 func (l *Lexer) NextCursor(row int, col int) (int, int, error) {
-	if col+1 < len(l.js[row]) {
+	if row >= len(l.js) {
+		return len(l.js), 0, io.EOF
+	} else if col+1 < len(l.js[row]) {
 		return row, col + 1, nil
 	} else if row+1 < len(l.js) {
 		return row + 1, 0, nil
@@ -24,71 +27,41 @@ func (l *Lexer) NextCursor(row int, col int) (int, int, error) {
 		return len(l.js), 0, io.EOF
 	}
 }
-func (l *Lexer) GetNextCursor() (int, int, error) {
-	return l.NextCursor(l.row, l.col)
-}
-func (l *Lexer) Peek() (rune, error) {
-	row, col, eof := l.GetNextCursor()
-	return l.js[row][col], eof
+
+func (l *Lexer) GetSkipWsCursor() (int, int, error) {
+	row, col, eof := l.CurrentCursor()
+	for ; l.row < len(l.js) && IsWhitespace(l.js[row][col]); row, col, eof = l.NextCursor(row, col) {
+		if eof != nil {
+			return len(l.js), 0, eof
+		}
+	}
+	return row, col, eof
 }
 
-func (l *Lexer) GetNextNotWsCursor() (int, int, error) {
-	row, col, eof := l.GetNextCursor()
-	for ; IsWhitespace(l.js[row][col]); row, col, eof = l.NextCursor(row, col) {
-		if eof != nil {
-			return 0, 0, eof
-		}
-	}
-	return row, col, nil
-}
-func (l *Lexer) skipWhitespace() error {
-	row, col, eof := l.GetNextNotWsCursor()
-	if eof != nil {
-		l.row, l.col = row, col
-		return eof
+func (l *Lexer) PeekSkipWsToken() Token {
+	row, col, eof := l.GetSkipWsCursor()
+	if eof == nil {
+		return Tokenize(l.js[row][col])
 	} else {
-		l.row, l.col = 0, 0
-		return nil
+		return Token{"", EOF}
 	}
 }
-func (l *Lexer) PeekNextNotWsToken() Token {
-	row, col, eof := l.GetNextCursor()
-	for ; IsWhitespace(l.js[row][col]); row, col, eof = l.NextCursor(row, col) {
-		if eof != nil {
-			return Token{"", EOF}
-		}
-	}
-	return Tokenize(l.js[row][col])
-}
-func (l *Lexer) IsObjectEnd() bool {
-	return l.PeekNextNotWsToken().TokenType == LEFTBRACE
-}
-func (l *Lexer) IsArrayEnd() bool {
-	return l.PeekNextNotWsToken().TokenType == RIGHTBRACE
+func (l *Lexer) IsSkipWsToken(t TokenType) bool {
+	return l.PeekSkipWsToken().TokenType == t
 }
 
 func (l *Lexer) Lex1RuneToken(expectedToken TokenType) (Token, error) {
-	if eof := l.skipWhitespace(); eof != nil {
-		return Token{"", EOF}, eof
-	}
-	token := Tokenize(l.Current())
-	if token.TokenType == expectedToken {
-		return token, nil
+	row, col, eof := l.GetSkipWsCursor()
+	var token Token
+	if eof == nil {
+		token = Tokenize(l.js[row][col])
 	} else {
-		row, col := l.CurrentCursor()
-		return token, &UnexpectedTokenError{row, col, token, []TokenType{expectedToken}}
+		token = Token{"", EOF}
 	}
-}
 
-// func (l *Lexer) LexObjectStart() (Token, error) {
-// 	return l.Lex1RuneToken(LEFTBRACE)
-// }
-// func (l *Lexer) LexObjectMap() (Token, error) {
-// 	return l.Lex1RuneToken(COLON)
-// }
-// func (l *Lexer) LexObjectSplit() (Token, error) {
-// 	return l.Lex1RuneToken(COMMA)
-// }
-// func (l *Lexer) LexObjectEnd() (Token, error) {
-// 	return l.Lex1RuneToken(RIGHTBRACE)
-// }
+	if token.TokenType == expectedToken {
+		l.row, l.col, _ = l.NextCursor(row, col)
+		return token, nil
+	}
+	return token, &UnexpectedTokenError{row, col, token, []TokenType{expectedToken}}
+}
