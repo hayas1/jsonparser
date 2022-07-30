@@ -42,7 +42,7 @@ func (l *Lexer) GetNextNotWsCursor() (int, int, error) {
 	return row, col, nil
 }
 func (l *Lexer) skipWhitespace() error {
-	row, col, eof := l.GetNextCursor()
+	row, col, eof := l.GetNextNotWsCursor()
 	if eof != nil {
 		l.row, l.col = row, col
 		return eof
@@ -51,7 +51,7 @@ func (l *Lexer) skipWhitespace() error {
 		return nil
 	}
 }
-func (l *Lexer) GetNextNotWsToken() Token {
+func (l *Lexer) PeekNextNotWsToken() Token {
 	row, col, eof := l.GetNextCursor()
 	for ; IsWhitespace(l.js[row][col]); row, col, eof = l.NextCursor(row, col) {
 		if eof != nil {
@@ -60,8 +60,8 @@ func (l *Lexer) GetNextNotWsToken() Token {
 	}
 	return Tokenize(l.js[row][col])
 }
-func (l *Lexer) IsNextString() bool {
-	return l.GetNextNotWsToken().TokenType == QUOTATION
+func (l *Lexer) IsObjectEnd() bool {
+	return l.PeekNextNotWsToken().TokenType == LEFTBRACE
 }
 
 func (l *Lexer) Lex1RuneToken(expectedToken TokenType) (Token, error) {
@@ -73,16 +73,19 @@ func (l *Lexer) Lex1RuneToken(expectedToken TokenType) (Token, error) {
 		return token, nil
 	} else {
 		row, col := l.CurrentCursor()
-		return token, &UnexpectedTokenError{row, col, token}
+		return token, &UnexpectedTokenError{row, col, token, []TokenType{expectedToken}}
 	}
 }
 
-func (l *Lexer) LexObjectHead() (Token, error) {
-	return l.Lex1RuneToken(LEFTBRACE)
-}
-func (l *Lexer) LexObjectSplit() (Token, error) {
-	return l.Lex1RuneToken(COMMA)
-}
-func (l *Lexer) LexObjectTail() (Token, error) {
-	return l.Lex1RuneToken(RIGHTBRACE)
-}
+// func (l *Lexer) LexObjectStart() (Token, error) {
+// 	return l.Lex1RuneToken(LEFTBRACE)
+// }
+// func (l *Lexer) LexObjectMap() (Token, error) {
+// 	return l.Lex1RuneToken(COLON)
+// }
+// func (l *Lexer) LexObjectSplit() (Token, error) {
+// 	return l.Lex1RuneToken(COMMA)
+// }
+// func (l *Lexer) LexObjectEnd() (Token, error) {
+// 	return l.Lex1RuneToken(RIGHTBRACE)
+// }

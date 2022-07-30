@@ -17,24 +17,44 @@ func NewParser(jsonLines []string) Parser {
 }
 
 func (p *Parser) ParseObject() (ast.ObjectNode, error) {
-	if _, err := p.lexer.LexObjectHead(); err != nil {
+	if _, err := p.lexer.Lex1RuneToken(LEFTBRACE); err != nil {
 		return ast.ObjectNode{}, err
 	}
+
 	objectMap := make(map[ast.StringNode]ast.ValueNode, 0)
-	for p.lexer.IsNextString() {
+	for !p.lexer.IsObjectEnd() {
 		stringNode, err1 := p.ParseString()
-		if err1 != nil {
+		if err, ok := err1.(*UnexpectedTokenError); err1 != nil && ok {
+			err.AddExpected(RIGHTBRACE)
+			return ast.ObjectNode{}, err
+		} else if err1 != nil {
 			return ast.ObjectNode{}, err1
 		}
-		_, err2 := p.lexer.LexObjectSplit()
+
+		_, err2 := p.lexer.Lex1RuneToken(COLON)
 		if err2 != nil {
 			return ast.ObjectNode{}, err2
 		}
+
 		objectNode, err3 := p.ParseValue()
 		if err3 != nil {
 			return ast.ObjectNode{}, err3
 		}
+
+		if !p.lexer.IsObjectEnd() {
+			// should be refactored?
+			_, err4 := p.lexer.Lex1RuneToken(COMMA)
+			if err, ok := err4.(*UnexpectedTokenError); !p.lexer.IsObjectEnd() && ok {
+				err.AddExpected(RIGHTBRACE)
+				return ast.ObjectNode{}, err
+			}
+		}
+
 		objectMap[stringNode] = objectNode
+
+	}
+	if _, err := p.lexer.Lex1RuneToken(RIGHTBRACE); err != nil {
+		return ast.ObjectNode{}, err
 	}
 
 	return ast.ObjectNode{}, nil
