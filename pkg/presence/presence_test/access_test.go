@@ -32,7 +32,9 @@ func TestInvalidAccess(tester *testing.T) {
 		`{`,
 		`    "jsonparser" : "json parser implemented by go",`,
 		`    "version": 0.1,`,
-		`    "keyword": ["json", "parser", "go", {"one": 1, "two":2, "three" :3}]`,
+		`    "keyword": ["json", "parser", "go",`,
+		`        {"one": 1, "two":2, "three" :3}`,
+		`    ]`,
 		`}`,
 	}
 	root, err := jp.Deserialize(js)

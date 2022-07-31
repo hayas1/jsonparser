@@ -17,7 +17,7 @@ func (t *ArrayNode) Dump(indent int) string {
 	for i := 0; i < len(t.ValueArray); i++ {
 		children[i] = indentInternal + t.ValueArray[i].Dump(indent+1)
 	}
-	return "[\n" + strings.Join(children, ", \n") + "\n" + indentExternal + "]"
+	return "[\n" + strings.Join(children, ",\n") + "\n" + indentExternal + "]"
 }
 
 func (n *ArrayNode) Array() []interface{} {
