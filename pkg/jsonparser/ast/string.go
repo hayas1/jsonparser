@@ -1,7 +1,7 @@
 package ast
 
 type StringNode struct {
-	str string
+	Str string
 }
 
 func (n *StringNode) Children() []*AstNode {
@@ -13,5 +13,5 @@ func (n *StringNode) Evaluate() interface{} {
 }
 
 func (n *StringNode) String() interface{} {
-	return n.str
+	return n.Str
 }

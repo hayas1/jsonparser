@@ -7,10 +7,9 @@ import (
 )
 
 func main() {
-	emptyObject := []string{" \t \r\n[ \n \t \t ] \t\t"}
-	parser := jp.NewParser(emptyObject)
-	objectArray, err := parser.ParseArray()
-	fmt.Println(objectArray, err)
-	_, ok := objectArray.Evaluate().([]interface{})
-	fmt.Println(ok)
+	example := []string{`"json\r\n parser\t\"g\u00f3\"😶"`, ``}
+	fmt.Println(example)
+	parser := jp.NewParser(example)
+	node, parseErr := parser.ParseString()
+	fmt.Println(node.Evaluate(), parseErr)
 }

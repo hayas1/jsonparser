@@ -22,6 +22,23 @@ func (l *Lexer) CurrentCursor() (int, int, error) {
 		return l.row, l.col, nil
 	}
 }
+func (l *Lexer) CurrentRune() (rune, error) {
+	if l.IsCursorEOF(l.row, l.col) {
+		return '\x00', io.EOF
+	} else {
+		return l.js[l.row][l.col], nil
+	}
+}
+func (l *Lexer) IsCurrentToken(t TokenType) bool {
+	c, eof := l.CurrentRune()
+	var token Token
+	if eof == nil {
+		token = Tokenize(c)
+	} else {
+		token = Token{"", EOF}
+	}
+	return token.TokenType == t
+}
 func (l *Lexer) NextCursor(row int, col int) (int, int, error) {
 	if l.IsCursorEOF(l.row, l.col) {
 		return len(l.js), 0, io.EOF
@@ -31,6 +48,15 @@ func (l *Lexer) NextCursor(row int, col int) (int, int, error) {
 		return row + 1, 0, nil
 	} else {
 		return len(l.js), 0, io.EOF
+	}
+}
+func (l *Lexer) Next() (rune, error) {
+	row, col, eof := l.CurrentCursor()
+	if eof == nil {
+		l.row, l.col, _ = l.NextCursor(row, col)
+		return l.js[l.row][l.col], nil
+	} else {
+		return '\x00', io.EOF
 	}
 }
 
@@ -69,4 +95,23 @@ func (l *Lexer) Lex1RuneToken(expectedToken TokenType) (Token, error) {
 		return token, nil
 	}
 	return token, &UnexpectedTokenError{row, col, token, []TokenType{expectedToken}}
+}
+
+func (l *Lexer) LexU4hexDigits() (string, error) {
+	row, col, eof := l.CurrentCursor()
+	if eof != nil {
+		return "", &UnexpectedEofError{row, col, "parse unicode"}
+	} else if len(l.js[row]) < col+5 {
+		return "", &UnexpectedLinefeedError{row, col, "parse unicode"}
+	}
+
+	hex4 := l.js[row][col+1 : col+5]
+	for _, uc := range hex4 {
+		if !('0' <= uc && uc <= '9' || 'a' <= uc && uc <= 'f' || 'A' <= uc && uc <= 'F') {
+			return "", &CannotParseUnicodeError{row, col, "unicode must be 4 hex digits(0-9,a-f)"}
+		}
+	}
+
+	l.row, l.col = row, col+4
+	return string(hex4), nil
 }

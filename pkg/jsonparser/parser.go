@@ -1,7 +1,10 @@
 package jsonparser
 
 import (
-	ast "github.com/hayas1/jsonparser/pkg/jsonparser/ast"
+	"strconv"
+	"strings"
+
+	"github.com/hayas1/jsonparser/pkg/jsonparser/ast"
 )
 
 type Parser struct {
@@ -102,8 +105,64 @@ func (p *Parser) ParseImmediate() (ast.ImmediateNode, error) {
 }
 
 func (p *Parser) ParseString() (ast.StringNode, error) {
-	// TODO
-	return ast.StringNode{}, nil
+	startRow, startCol, _ := p.lexer.CurrentCursor()
+	if _, err := p.lexer.Lex1RuneToken(QUOTATION); err != nil {
+		return ast.StringNode{}, err
+	}
+
+	var builder strings.Builder
+	for c, eof := p.lexer.CurrentRune(); !p.lexer.IsCurrentToken(QUOTATION); c, eof = p.lexer.Next() {
+		if eof != nil {
+			return ast.StringNode{}, &UnexpectedEofError{p.lexer.row, p.lexer.col, "parse string"}
+		} else if startRow != p.lexer.row {
+			return ast.StringNode{}, &OpenStringLiteralError{startRow, startCol}
+		}
+
+		switch c {
+		case '\\':
+			if err := p.ParseStringEscapeSequence(&builder); err != nil {
+				return ast.StringNode{}, err
+			}
+		default:
+			builder.WriteRune(c)
+		}
+	}
+
+	if _, err := p.lexer.Lex1RuneToken(QUOTATION); err != nil {
+		return ast.StringNode{}, err
+	}
+
+	return ast.StringNode{Str: builder.String()}, nil
+}
+
+func (p *Parser) ParseStringEscapeSequence(builder *strings.Builder) error {
+	cc, eof := p.lexer.Next()
+	if eof != nil {
+		return &UnexpectedEofError{p.lexer.row, p.lexer.col, "parse escape sequence"}
+	}
+	switch cc {
+	case '"', '/', '\\':
+		builder.WriteRune(cc)
+	case 'b', 'f', 'n', 'r', 't':
+		escaped, err := strconv.Unquote(`"\` + string(cc) + `"`)
+		if err != nil {
+			return err
+		}
+		builder.WriteString(escaped)
+	case 'u':
+		hexUc, err := p.lexer.LexU4hexDigits()
+		if err != nil {
+			return err
+		}
+		strUc, err := strconv.Unquote(`"\u` + hexUc + `"`)
+		if err != nil {
+			return err
+		}
+		builder.WriteString(strUc)
+	default:
+		return &UnknownEscapeSequenceError{p.lexer.row, p.lexer.col, cc}
+	}
+	return nil
 }
 
 func (p *Parser) ParseNumber() (ast.NumberNode, error) {
