@@ -19,6 +19,14 @@ func (n *ImmediateNode) Evaluate() interface{} {
 	}
 }
 
+func (n *ImmediateNode) Dump(indent int) string {
+	return n.Immediate
+}
+
+func (n *ImmediateNode) String() string {
+	return n.Immediate
+}
+
 func (n *ImmediateNode) True() bool {
 	return n.Immediate == "true"
 }

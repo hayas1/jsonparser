@@ -11,6 +11,10 @@ func (n *NumberNode) Evaluate() interface{} {
 	return num
 }
 
+func (n *NumberNode) Dump(indent int) string {
+	return n.Number
+}
+
 func (n *NumberNode) Integer() int64 {
 	// TODO no via float and, if Number is float, this function should return error
 	num := n.Float()
