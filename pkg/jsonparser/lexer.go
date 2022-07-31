@@ -4,20 +4,26 @@ import "io"
 
 type Lexer struct {
 	js  [][]rune
-	row int
+	row int // if len(js) <= row, reach EOF
 	col int
 }
 
-func (l *Lexer) CurrentCursor() (int, int, error) {
-	if l.row < len(l.js) {
-		return l.row, l.col, nil
+func (l *Lexer) IsCursorEOF(row int, col int) bool {
+	if row < len(l.js) {
+		return false
 	} else {
-		return len(l.js), 0, io.EOF
+		return true
 	}
 }
-
+func (l *Lexer) CurrentCursor() (int, int, error) {
+	if l.IsCursorEOF(l.row, l.col) {
+		return len(l.js), 0, io.EOF
+	} else {
+		return l.row, l.col, nil
+	}
+}
 func (l *Lexer) NextCursor(row int, col int) (int, int, error) {
-	if row >= len(l.js) {
+	if l.IsCursorEOF(l.row, l.col) {
 		return len(l.js), 0, io.EOF
 	} else if col+1 < len(l.js[row]) {
 		return row, col + 1, nil
@@ -30,14 +36,13 @@ func (l *Lexer) NextCursor(row int, col int) (int, int, error) {
 
 func (l *Lexer) GetSkipWsCursor() (int, int, error) {
 	row, col, eof := l.CurrentCursor()
-	for ; l.row < len(l.js) && IsWhitespace(l.js[row][col]); row, col, eof = l.NextCursor(row, col) {
+	for ; !l.IsCursorEOF(row, col) && IsWhitespace(l.js[row][col]); row, col, eof = l.NextCursor(row, col) {
 		if eof != nil {
 			return len(l.js), 0, eof
 		}
 	}
 	return row, col, eof
 }
-
 func (l *Lexer) PeekSkipWsToken() Token {
 	row, col, eof := l.GetSkipWsCursor()
 	if eof == nil {
