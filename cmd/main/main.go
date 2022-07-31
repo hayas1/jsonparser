@@ -7,10 +7,16 @@ import (
 )
 
 func main() {
-	// example := []string{`{"json parser" : "implemented by go", "version": 0.1}`}
-	example := []string{`true`}
+	example := []string{
+		`{`,
+		`    "jsonparser" : "json parser implemented by go",`,
+		`    "version": 0.1,`,
+		`    "keyword": ["json", "parser", "go"]`,
+		`}`,
+	}
+	// example := []string{`  true`}
 	// fmt.Println(example)
 	parser := jp.NewParser(example)
-	node, parseErr := parser.ParseImmediate()
+	node, parseErr := parser.ParseValue()
 	fmt.Println(node.Evaluate(), parseErr)
 }

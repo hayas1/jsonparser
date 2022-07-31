@@ -96,8 +96,31 @@ func (p *Parser) ParseArray() (ast.ArrayNode, error) {
 }
 
 func (p *Parser) ParseValue() (ast.ValueNode, error) {
-	// TODO
-	return ast.ValueNode{}, nil
+	c, eof := p.lexer.LexStartValue()
+	if eof != nil {
+		return ast.ValueNode{}, eof
+	}
+	switch c {
+	case '"':
+		stringNode, err := p.ParseString()
+		return ast.ValueNode{Child: &stringNode}, err
+	case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		numberNode, err := p.ParseNumber()
+		return ast.ValueNode{Child: &numberNode}, err
+	case '{':
+		objectNode, err := p.ParseObject()
+		return ast.ValueNode{Child: &objectNode}, err
+	case '[':
+		arrayNode, err := p.ParseArray()
+		return ast.ValueNode{Child: &arrayNode}, err
+	case 't', 'f', 'n':
+		immediateNode, err := p.ParseImmediate()
+		return ast.ValueNode{Child: &immediateNode}, err
+	default:
+		t := Token{string(c), UNKNOWN}
+		expected := []TokenType{QUOTATION, MINUS, DIGIT, LEFTBRACE, LEFTBRACKET, TRUE, FALSE, NULL}
+		return ast.ValueNode{}, &UnexpectedTokenError{p.lexer.row, p.lexer.col, t, expected}
+	}
 }
 
 func (p *Parser) ParseImmediate() (ast.ImmediateNode, error) {

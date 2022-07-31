@@ -171,3 +171,13 @@ func (l *Lexer) LexImmediate() (Token, error) {
 		return Token{t, UNKNOWN}, &UnknownImmediatePrefix{row, col, t}
 	}
 }
+
+func (l *Lexer) LexStartValue() (rune, error) {
+	row, col, eof := l.GetSkipWsCursor()
+	if eof == nil {
+		l.row, l.col = row, col
+		return l.js[row][col], nil
+	} else {
+		return '\x00', eof
+	}
+}
