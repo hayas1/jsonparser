@@ -101,8 +101,11 @@ func (p *Parser) ParseValue() (ast.ValueNode, error) {
 }
 
 func (p *Parser) ParseImmediate() (ast.ImmediateNode, error) {
-	// TODO
-	return ast.ImmediateNode{}, nil
+	token, err := p.lexer.LexImmediate()
+	if err != nil {
+		return ast.ImmediateNode{}, err
+	}
+	return ast.ImmediateNode{Immediate: token.Element}, nil
 }
 
 func (p *Parser) ParseString() (ast.StringNode, error) {

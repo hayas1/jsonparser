@@ -1,7 +1,9 @@
 package ast
 
+import "errors"
+
 type ImmediateNode struct {
-	// TODO enum? true or false or null
+	Immediate string
 }
 
 func (n *ImmediateNode) Children() []*AstNode {
@@ -9,21 +11,27 @@ func (n *ImmediateNode) Children() []*AstNode {
 }
 
 func (n *ImmediateNode) Evaluate() interface{} {
-	// TODO
-	return make([]interface{}, 0)
+	switch n.Immediate {
+	case "true":
+		return n.True()
+	case "false":
+		return n.False()
+	case "null":
+		return n.Null()
+	default:
+		return errors.New("unexpected Immediate: " + n.Immediate)
+	}
 }
 
 func (n *ImmediateNode) True() bool {
-	// TODO
-	return true
+	return n.Immediate == "true"
 }
 
 func (n *ImmediateNode) False() bool {
-	// TODO
-	return false
+	return n.Immediate == "false"
 }
 
-func (n *ImmediateNode) Null() struct{} {
-	// TODO
-	return struct{}{}
+func (n *ImmediateNode) Null() bool {
+	// TODO use enum constant and better interface
+	return n.Immediate == "null"
 }

@@ -7,9 +7,10 @@ import (
 )
 
 func main() {
-	example := []string{`3e-1`, `.1`}
+	// example := []string{`{"json parser" : "implemented by go", "version": 0.1}`}
+	example := []string{`true`}
 	// fmt.Println(example)
 	parser := jp.NewParser(example)
-	node, parseErr := parser.ParseNumber()
+	node, parseErr := parser.ParseImmediate()
 	fmt.Println(node.Evaluate(), parseErr)
 }

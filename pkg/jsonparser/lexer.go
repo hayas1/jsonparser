@@ -129,3 +129,46 @@ func (l *Lexer) IsCurrentNumberToken(t TokenType) bool {
 		return false
 	}
 }
+
+func (l *Lexer) LexImmediate() (Token, error) {
+	row, col, eof := l.CurrentCursor()
+	if eof != nil {
+		return Token{"", EOF}, eof
+	}
+	switch l.js[row][col] {
+	case 't':
+
+		if len(l.js[row]) < col+4 {
+			return Token{"", UNKNOWN}, &UnexpectedLinefeedError{row, col, "parse immediate"}
+		} else if tru := string(l.js[row][col : col+4]); tru != "true" {
+			t := Token{tru, UNKNOWN}
+			return t, &UnexpectedTokenError{row, col, t, []TokenType{TRUE}}
+		} else {
+			l.row, l.col = row, col+4
+			return TokenizeImmediate(tru), nil
+		}
+	case 'f':
+		if len(l.js[row]) < col+5 {
+			return Token{"", UNKNOWN}, &UnexpectedLinefeedError{row, col, "parse immediate"}
+		} else if fal := string(l.js[row][col : col+5]); fal != "false" {
+			t := Token{fal, UNKNOWN}
+			return t, &UnexpectedTokenError{row, col, t, []TokenType{TRUE}}
+		} else {
+			l.row, l.col = row, col+5
+			return TokenizeImmediate(fal), nil
+		}
+	case 'n':
+		if len(l.js[row]) < col+4 {
+			return Token{"", UNKNOWN}, &UnexpectedLinefeedError{row, col, "parse immediate"}
+		} else if null := string(l.js[row][col : col+4]); null != "null" {
+			t := Token{null, UNKNOWN}
+			return t, &UnexpectedTokenError{row, col, t, []TokenType{TRUE}}
+		} else {
+			l.row, l.col = row, col+4
+			return TokenizeImmediate(null), nil
+		}
+	default:
+		t := string(l.js[row][col])
+		return Token{t, UNKNOWN}, &UnknownImmediatePrefix{row, col, t}
+	}
+}

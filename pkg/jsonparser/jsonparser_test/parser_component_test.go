@@ -130,3 +130,39 @@ func TestParseMinusExponent(tester *testing.T) {
 		tester.Error("\"5E-1\" should be parsed as 0.5, but as", exponentNode.Float())
 	}
 }
+
+func TestParserImmediateTrue(tester *testing.T) {
+	tru := []string{"true"}
+	parser := jp.NewParser(tru)
+	immediateNode, parseErr := parser.ParseImmediate()
+	if parseErr != nil {
+		tester.Error("unexpected error: ", parseErr)
+	}
+	if !(immediateNode.True() && !immediateNode.False() && !immediateNode.Null()) {
+		tester.Error("\"true\" should be parsed as true, but as not true")
+	}
+}
+
+func TestParserImmediateFalse(tester *testing.T) {
+	fal := []string{"false"}
+	parser := jp.NewParser(fal)
+	immediateNode, parseErr := parser.ParseImmediate()
+	if parseErr != nil {
+		tester.Error("unexpected error: ", parseErr)
+	}
+	if !(!immediateNode.True() && immediateNode.False() && !immediateNode.Null()) {
+		tester.Error("\"false\" should be parsed as false, but as not false")
+	}
+}
+
+func TestParserImmediateNull(tester *testing.T) {
+	null := []string{"null"}
+	parser := jp.NewParser(null)
+	immediateNode, parseErr := parser.ParseImmediate()
+	if parseErr != nil {
+		tester.Error("unexpected error: ", parseErr)
+	}
+	if !(!immediateNode.True() && !immediateNode.False() && immediateNode.Null()) {
+		tester.Error("\"null\" should be parsed as null, but as not null")
+	}
+}

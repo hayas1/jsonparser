@@ -73,3 +73,13 @@ type CannotParseUnicodeError struct {
 func (e *CannotParseUnicodeError) Error() string {
 	return fmt.Sprintf("line %d (col %d): unknown escape sequence %s", e.row, e.col, e.msg)
 }
+
+type UnknownImmediatePrefix struct {
+	row    int
+	col    int
+	prefix string
+}
+
+func (e *UnknownImmediatePrefix) Error() string {
+	return fmt.Sprintf("line %d (col %d): unknown immediate start with %s", e.row, e.col, e.prefix)
+}
