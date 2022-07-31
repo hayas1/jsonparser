@@ -6,7 +6,7 @@ import (
 	"github.com/hayas1/jsonparser/pkg/jsonparser/ast"
 )
 
-func Route(root ast.AstNode, path ...interface{}) (interface{}, error) {
+func Access(root ast.AstNode, path ...interface{}) (interface{}, error) {
 	curr := root
 	for _, ind := range path {
 		if ii, ok := ind.(int); ok {
@@ -59,7 +59,7 @@ type cases struct {
 	ObjInd func(ObjInd)
 }
 
-func Access(an ast.AstNode, path ...path) interface{} {
+func Route(an ast.AstNode, path ...path) interface{} {
 	curr := an
 	for _, ind := range path {
 		ind.match(cases{

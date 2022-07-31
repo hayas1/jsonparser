@@ -18,6 +18,6 @@ func main() {
 	fmt.Println(root.Evaluate(), err) // parse result
 	fmt.Println(jp.Serialize(&root))  // dump json
 
-	fmt.Println(jp.Access(&root, jp.ObjInd("keyword"), jp.ArrInd(2))) // go
-	fmt.Println(jp.Route(&root, "keyword", 3, "one"))                 // 1
+	fmt.Println(jp.Route(&root, jp.ObjInd("keyword"), jp.ArrInd(2))) // go
+	fmt.Println(jp.Access(&root, "keyword", 3, "one", 1))            // 1 <nil>
 }
