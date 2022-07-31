@@ -24,7 +24,7 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 		return ast.ObjectNode{}, err
 	}
 
-	valueObject := make(map[ast.StringNode]ast.ValueNode, 0)
+	valueObject := make(map[string]ast.ValueNode, 0)
 	for !p.lexer.IsSkipWsToken(RIGHTBRACE) {
 		stringNode, err1 := p.ParseString()
 		if err, ok := err1.(*UnexpectedTokenError); err1 != nil && ok {
@@ -53,7 +53,7 @@ func (p *Parser) ParseObject() (ast.ObjectNode, error) {
 			}
 		}
 
-		valueObject[stringNode] = valueNode
+		valueObject[stringNode.String()] = valueNode
 	}
 
 	if _, err := p.lexer.Lex1RuneToken(RIGHTBRACE); err != nil {

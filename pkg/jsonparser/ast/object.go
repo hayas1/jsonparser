@@ -1,9 +1,12 @@
 package ast
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 type ObjectNode struct {
-	ValueObject map[StringNode]ValueNode
+	ValueObject map[string]ValueNode
 }
 
 func (n *ObjectNode) Evaluate() interface{} {
@@ -15,7 +18,7 @@ func (n *ObjectNode) Dump(indent int) string {
 	indentExternal := strings.Repeat(" ", 4*indent)
 	indentInternal := strings.Repeat(" ", 4*(indent+1))
 	for key, value := range n.ValueObject {
-		children = append(children, indentInternal+key.Dump(indent)+": "+value.Dump(indent+1))
+		children = append(children, indentInternal+strconv.Quote(key)+": "+value.Dump(indent+1))
 	}
 	return "{\n" + strings.Join(children, ",\n") + "\n" + indentExternal + "}"
 }
@@ -23,7 +26,7 @@ func (n *ObjectNode) Dump(indent int) string {
 func (n *ObjectNode) Object() map[string]interface{} {
 	object := make(map[string]interface{})
 	for s, v := range n.ValueObject {
-		object[s.Evaluate().(string)] = v.Evaluate()
+		object[s] = v.Evaluate()
 	}
 	return object
 }
