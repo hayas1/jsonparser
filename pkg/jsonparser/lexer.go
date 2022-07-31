@@ -137,7 +137,6 @@ func (l *Lexer) LexImmediate() (Token, error) {
 	}
 	switch l.js[row][col] {
 	case 't':
-
 		if len(l.js[row]) < col+4 {
 			return Token{"", UNKNOWN}, &UnexpectedLinefeedError{row, col, "parse immediate"}
 		} else if tru := string(l.js[row][col : col+4]); tru != "true" {
