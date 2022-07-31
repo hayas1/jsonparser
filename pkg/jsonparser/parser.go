@@ -1,7 +1,6 @@
 package jsonparser
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -213,7 +212,7 @@ func (p *Parser) ParseNumber() (ast.NumberNode, error) {
 			return ast.NumberNode{}, err
 		}
 	} else if p.lexer.IsCurrentNumberToken(EXPONENT) {
-		fmt.Println(p.lexer.Lex1RuneToken(EXPONENT))
+		p.lexer.Lex1RuneToken(EXPONENT)
 		builder.WriteString("e")
 		if p.lexer.IsCurrentToken(MINUS) {
 			p.lexer.Lex1RuneToken(MINUS)
