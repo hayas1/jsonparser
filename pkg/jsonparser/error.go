@@ -24,3 +24,52 @@ func (e *UnexpectedTokenError) Error() string {
 func (e *UnexpectedTokenError) AddExpected(expected ...TokenType) {
 	e.expected = append(e.expected, expected...)
 }
+
+type UnexpectedEofError struct {
+	row  int
+	col  int
+	when string
+}
+
+func (e *UnexpectedEofError) Error() string {
+	return fmt.Sprintf("line %d (col %d): unexpected EOF, during %s", e.row, e.col, e.when)
+}
+
+type UnexpectedLinefeedError struct {
+	row  int
+	col  int
+	when string
+}
+
+func (e *UnexpectedLinefeedError) Error() string {
+	return fmt.Sprintf("line %d (col %d): unexpected line feed, during %s", e.row, e.col, e.when)
+}
+
+type OpenStringLiteralError struct {
+	row int
+	col int
+}
+
+func (e *OpenStringLiteralError) Error() string {
+	return fmt.Sprintf("line %d (col %d): string literal should be closed by \"\"\"", e.row, e.col)
+}
+
+type UnknownEscapeSequenceError struct {
+	row            int
+	col            int
+	escapeSequence rune
+}
+
+func (e *UnknownEscapeSequenceError) Error() string {
+	return fmt.Sprintf("line %d (col %d): unknown escape sequence %v", e.row, e.col, e.escapeSequence)
+}
+
+type CannotParseUnicodeError struct {
+	row int
+	col int
+	msg string
+}
+
+func (e *CannotParseUnicodeError) Error() string {
+	return fmt.Sprintf("line %d (col %d): unknown escape sequence %s", e.row, e.col, e.msg)
+}
