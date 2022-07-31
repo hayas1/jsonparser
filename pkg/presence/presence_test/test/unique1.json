@@ -1,0 +1,19 @@
+{
+    "keyword": [
+        {
+            "feature": {
+                "this": {
+                    "json": {
+                        "have": {
+                            "unique": "structure"
+                        }
+                    }
+                }
+            }
+        },
+        "json",
+        "parser",
+        "go",
+        "JavaScript Object Notation"
+    ]
+}
