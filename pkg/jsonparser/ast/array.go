@@ -4,9 +4,9 @@ type ArrayNode struct {
 	ValueArray []ValueNode
 }
 
-func (n *ArrayNode) Children() []AstNode {
+func (n *ArrayNode) Children() []*AstNode {
 	// TODO
-	return make([]AstNode, 0)
+	return make([]*AstNode, 0)
 }
 
 func (n *ArrayNode) Evaluate() interface{} {
