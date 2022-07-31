@@ -92,17 +92,14 @@ func TestTokenizeString(tester *testing.T) {
 	}
 }
 
-// func TestTokenizeNumber(tester *testing.T) {
-// 	digit, minus, plus, dot, exponent := "7", "-", "+", ".", "e"
-// 	numberParts := []string{digit, minus, plus, dot, exponent}
-// 	expected := []jp.TokenType{jp.DIGIT, jp.MINUS, jp.PLUS, jp.DOT, jp.EXPONENT}
-// 	for i := 0; i < len(numberParts); i++ {
-// 		if jp.TokenizeNumber(numberParts[i]).TokenType != expected[i] {
-// 			tester.Error(numberParts[i] + " should be " + string(expected[i]) + " token")
-// 		}
-// 	}
+func TestTokenizeNumber(tester *testing.T) {
+	digit, minus, plus, dot, exponent := '7', '-', '+', '.', 'e'
+	numberParts := []rune{digit, minus, plus, dot, exponent}
+	expected := []jp.TokenType{jp.DIGIT, jp.MINUS, jp.PLUS, jp.DOT, jp.EXPONENT}
+	for i := 0; i < len(numberParts); i++ {
+		if jp.TokenizeNumber(numberParts[i]).TokenType != expected[i] {
+			tester.Error(string(numberParts[i]) + " should be " + string(expected[i]) + " token")
+		}
+	}
 
-// 	if jp.TokenizeNumber("123").TokenType != jp.DIGITS {
-// 		tester.Error("\"123\" should be digits token")
-// 	}
-// }
+}

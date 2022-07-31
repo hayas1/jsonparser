@@ -76,6 +76,14 @@ func Tokenize(c rune) Token {
 		return Token{string(c), RIGHTBRACKET}
 	case '"':
 		return Token{string(c), QUOTATION}
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		return Token{string(c), DIGIT}
+	case '-':
+		return Token{string(c), MINUS}
+	case '+':
+		return Token{string(c), PLUS}
+	case '.':
+		return Token{string(c), DOT}
 	default:
 		return Token{string(c), UNKNOWN}
 	}
@@ -119,19 +127,19 @@ func TokenizeString(s string) Token {
 	}
 }
 
-func TokenizeNumber(s string) Token {
-	switch s {
-	case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
-		return Token{s, DIGIT}
-	case "-":
-		return Token{s, MINUS}
-	case "+":
-		return Token{s, PLUS}
-	case ".":
-		return Token{s, DOT}
-	case "e", "E":
-		return Token{s, EXPONENT}
+func TokenizeNumber(c rune) Token {
+	switch c {
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		return Token{string(c), DIGIT}
+	case '-':
+		return Token{string(c), MINUS}
+	case '+':
+		return Token{string(c), PLUS}
+	case '.':
+		return Token{string(c), DOT}
+	case 'e', 'E':
+		return Token{string(c), EXPONENT}
 	default:
-		return Token{s, DIGITS}
+		return Token{string(c), UNKNOWN}
 	}
 }
