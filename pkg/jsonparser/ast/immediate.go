@@ -6,10 +6,6 @@ type ImmediateNode struct {
 	Immediate string
 }
 
-func (n *ImmediateNode) Children() []*AstNode {
-	return make([]*AstNode, 0)
-}
-
 func (n *ImmediateNode) Evaluate() interface{} {
 	switch n.Immediate {
 	case "true":

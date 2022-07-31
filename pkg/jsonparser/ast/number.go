@@ -6,10 +6,6 @@ type NumberNode struct {
 	Number string
 }
 
-func (n *NumberNode) Children() []*AstNode {
-	return make([]*AstNode, 0)
-}
-
 func (n *NumberNode) Evaluate() interface{} {
 	num := n.Float()
 	return num

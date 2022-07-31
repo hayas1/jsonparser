@@ -4,11 +4,6 @@ type ArrayNode struct {
 	ValueArray []ValueNode
 }
 
-func (n *ArrayNode) Children() []*AstNode {
-	// TODO
-	return make([]*AstNode, 0)
-}
-
 func (n *ArrayNode) Evaluate() interface{} {
 	return n.Array()
 }
