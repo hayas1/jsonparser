@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	example := []string{`"json\r\n parser\t\"g\u00f3\"😶"`, ``}
-	fmt.Println(example)
+	example := []string{`3e-1`, `.1`}
+	// fmt.Println(example)
 	parser := jp.NewParser(example)
-	node, parseErr := parser.ParseString()
+	node, parseErr := parser.ParseNumber()
 	fmt.Println(node.Evaluate(), parseErr)
 }

@@ -84,6 +84,8 @@ func Tokenize(c rune) Token {
 		return Token{string(c), PLUS}
 	case '.':
 		return Token{string(c), DOT}
+	case 'e', 'E':
+		return Token{string(c), EXPONENT}
 	default:
 		return Token{string(c), UNKNOWN}
 	}

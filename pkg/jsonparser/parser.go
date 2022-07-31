@@ -1,6 +1,7 @@
 package jsonparser
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -166,6 +167,52 @@ func (p *Parser) ParseStringEscapeSequence(builder *strings.Builder) error {
 }
 
 func (p *Parser) ParseNumber() (ast.NumberNode, error) {
-	// TODO
-	return ast.NumberNode{}, nil
+	startRow, _, _ := p.lexer.CurrentCursor()
+	var builder strings.Builder
+
+	if p.lexer.IsCurrentToken(MINUS) {
+		p.lexer.Lex1RuneToken(MINUS)
+		builder.WriteString("-")
+	}
+
+	if err := p.ParseDigits(startRow, &builder); err != nil {
+		return ast.NumberNode{}, err
+	}
+
+	if p.lexer.IsCurrentNumberToken(DOT) {
+		p.lexer.Lex1RuneToken(DOT)
+		builder.WriteString(".")
+
+		if err := p.ParseDigits(startRow, &builder); err != nil {
+			return ast.NumberNode{}, err
+		}
+	} else if p.lexer.IsCurrentNumberToken(EXPONENT) {
+		fmt.Println(p.lexer.Lex1RuneToken(EXPONENT))
+		builder.WriteString("e")
+		if p.lexer.IsCurrentToken(MINUS) {
+			p.lexer.Lex1RuneToken(MINUS)
+			builder.WriteString("-")
+		} else if p.lexer.IsCurrentNumberToken(PLUS) {
+			p.lexer.Lex1RuneToken(PLUS)
+			builder.WriteString("+")
+		}
+
+		if err := p.ParseDigits(startRow, &builder); err != nil {
+			return ast.NumberNode{}, err
+		}
+	}
+	return ast.NumberNode{Number: builder.String()}, nil
+}
+
+func (p *Parser) ParseDigits(startRow int, builder *strings.Builder) error {
+	for c, eof := p.lexer.CurrentRune(); p.lexer.IsCurrentNumberToken(DIGIT); c, eof = p.lexer.Next() {
+		if eof != nil {
+			return &UnexpectedEofError{p.lexer.row, p.lexer.col, "parse number"}
+		} else if startRow != p.lexer.row {
+			return nil
+		}
+
+		builder.WriteRune(c)
+	}
+	return nil
 }

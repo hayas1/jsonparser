@@ -1,7 +1,9 @@
 package ast
 
+import "strconv"
+
 type NumberNode struct {
-	// TODO enum? int or float
+	Number string
 }
 
 func (n *NumberNode) Children() []*AstNode {
@@ -9,16 +11,17 @@ func (n *NumberNode) Children() []*AstNode {
 }
 
 func (n *NumberNode) Evaluate() interface{} {
-	// TODO
-	return make([]interface{}, 0)
+	num := n.Float()
+	return num
 }
 
-func (n *NumberNode) Integer() int {
-	// TODO
-	return 0
+func (n *NumberNode) Integer() int64 {
+	// TODO no via float
+	num := n.Float()
+	return int64(num)
 }
 
 func (n *NumberNode) Float() float64 {
-	// TODO
-	return 0
+	num, _ := strconv.ParseFloat(n.Number, 64)
+	return num
 }

@@ -53,8 +53,13 @@ func (l *Lexer) NextCursor(row int, col int) (int, int, error) {
 func (l *Lexer) Next() (rune, error) {
 	row, col, eof := l.CurrentCursor()
 	if eof == nil {
-		l.row, l.col, _ = l.NextCursor(row, col)
-		return l.js[l.row][l.col], nil
+		l.row, l.col, eof = l.NextCursor(row, col)
+		// return l.js[row][col], nil
+		if eof == nil {
+			return l.js[l.row][l.col], nil
+		} else {
+			return '\x00', io.EOF
+		}
 	} else {
 		return '\x00', io.EOF
 	}
@@ -114,4 +119,13 @@ func (l *Lexer) LexU4hexDigits() (string, error) {
 
 	l.row, l.col = row, col+4
 	return string(hex4), nil
+}
+
+func (l *Lexer) IsCurrentNumberToken(t TokenType) bool {
+	c, eof := l.CurrentRune()
+	if eof == nil {
+		return TokenizeNumber(c).TokenType == t
+	} else {
+		return false
+	}
 }
